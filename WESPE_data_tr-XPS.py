@@ -1,5 +1,5 @@
 """
-Created on Fri Feb  4 12:40:48 2022
+Created on Fri Feb 4 12:40:48 2022
 
 @author: Dmitrii Potorochin
 
@@ -43,9 +43,8 @@ First, we specify variables that will for the whole program.
 '''
 file_dir = 'D:/Data/Extension_2021_final'  # data folder
 # Here we specify run numbers as a list.
-#run_numbers = [37292, 37293, 37294, 37299, 37300, 37302, 37303]
+run_numbers = [37292, 37293, 37294, 37299, 37300, 37302, 37303]
 #run_numbers = [37378, 37379, 37380, 37381, 37382, 37383]
-run_numbers = [37385, 37386, 37387]
 #run_numbers = [36802]
 #run_numbers = [36814, 36827, 36828]
 energy_step = 0.075  # (eV) Determines the step on the energy axis.
@@ -54,10 +53,10 @@ DLD = 'DLD4Q'  # Options: 'DLD4Q' or 'DLD1Q'
 t0 = 1328.2  # For recalculation of the delay axis.
 time_0 = 'on'  # Recalculation happens when time_0 = 'on'.
 dif_map = 'off'  # Plotting of difference map: 'on' or 'off'. if time_0 == 'on'
-t = [-1.4, 0.5]  # Here we specify delay cut positions as a list. [t1, t2, t3]
-dt = [0.1, 0.1]  # Here we specify delay cut widths as a list. [dt1, dt2, dt3]
-e = [202.3,202.7,203.2]  # Here we specify energy cut positions as a list.
-de = [0.3,0.3,0.3]  # Here we specify energy cut widths as a list.
+t = [-0.4, 0.4]  # Here we specify delay cut positions as a list. [t1, t2, t3]
+dt = [0.3, 0.3]  # Here we specify delay cut widths as a list. [dt1, dt2, dt3]
+e = [202.3, 202.7, 203.2]  # Here we specify energy cut positions as a list.
+de = [0.3, 0.3, 0.3]  # Here we specify energy cut widths as a list.
 static = 1001  # Here we specify the del. val. where static runs will be stored
 
 '''
@@ -72,9 +71,8 @@ ROI_e = 'on'  # If 'on', the filter of energy values is activated.
 B_sorting = 'off'  # If 'on', the macrobunch filter is activated.
 MB_sorting = 'off'  # If 'on', the microbunch filter is activated.
 # Here we specify the delay and energy region margins as two lists.
-#delay_range = [-0.8, 4]  # delay range in ps
-delay_range = [1327.5, 1329.8]
-energy_range = [85.5, 92]  # kinetic energy range in eV
+delay_range = [-0.8, 3.5]  # delay range in ps
+energy_range = [198, 206]  # kinetic energy range in eV
 B_range = [0, 99]  # macrobunch range in %: [0, 50] means first 50% of bunches
 MB_range = [1, 440]  # microbunch range from 1 to 440
 
@@ -99,9 +97,9 @@ GRAPH SETTINGS
 '''
 '''Graph selection'''
 # Select graphs you want to see
-delay_energy_map = 'off'  # Intensity versus energy and delay time both
+delay_energy_map = 'on'  # Intensity versus energy and delay time both
 delay_cut = 'on'  # Intensity versus energy plot (at fixed delay)
-energy_cut = 'off'  # Intensity versus delay time (at fixed energy)
+energy_cut = 'on'  # Intensity versus delay time (at fixed energy)
 
 '''Additional features'''
 # switch from 2D to 3D plot for the delay energy map
@@ -110,7 +108,7 @@ elev = 80  # The elevation angle in the vertical plane in degrees.
 azim = 270  # The azimuth angle in the horizontal plane in degrees.
 
 # add difference curve to the delay cut plot
-add_dif_delay_cut = 'on'  # Set 'on' if you want to get a difference plot
+add_dif_delay_cut = 'off'  # Set 'on' if you want to get a difference plot
 magn = 5  # Coefficient for multiplication of difference curves
 
 # add vertical offset the delay cut plot (waterfall plot)
@@ -124,7 +122,7 @@ font_size_axis = 24  # Figure font size for axis labels
 font_size_large = 30  # Figure font size for titles
 dpi = 600  # Figure resolution
 fig_width = 10  # Figure width (individual graph)
-fig_height = 8  # Figure height (individual graph)
+fig_height = 5  # Figure height (individual graph)
 axes_linewidth = 1.1  # Axes linewidth (graph frames)
 
 '''Delay-energy map parameters'''
@@ -512,8 +510,8 @@ def t0_finder(hv=2.407, e='SB', de=0.4, function='V',
                              f'E = {pos_e} eV, dE = {de} eV']
     else:
         if e == 'SB':
-            string_label_data =['Fixed energy cut across the 1$^{st}$ sideband:',
-                                f'E = {pos_e} eV, dE = {de} eV']
+            string_label_data = ['Fixed energy cut across the 1$^{st}$ sideband:',
+                                 f'E = {pos_e} eV, dE = {de} eV']
         else:
             string_label_data = ['Fixed energy cut across the primary feature:',
                                  f'E = {pos_e} eV, dE = {de} eV']
@@ -849,7 +847,10 @@ for i in image_data_y_i:
     image_data_y[i] = counter
     counter += 1
 
-# image_data[9] = [i*0 + 400 for i in image_data[9]]
+if min(np.array(image_data).shape) == 0:
+    raise ValueError('Check ROI values!\n'
+                     'Probably,the request does not fit the '
+                     'delay-energy data.')
 
 '''
 MAKING DIFFERENCE MAP
@@ -977,6 +978,11 @@ if delay_cut == 'on':
                 counter += 1
             t_cut_plot = t_cut_plot_wf
 
+    if min(np.array(t_cut_plot).shape) == 0:
+        raise ValueError('Check values for the delay cut plot!\n'
+                         'Probably,the request does not fit the '
+                         'delay-energy data.')
+
 '''
 MAKING ENERGY CUTS
 '''
@@ -1024,6 +1030,11 @@ if energy_cut == 'on':
     if len(e_cut_plot) == 0:
         for i in image_data_y.keys():
             e_cut_plot.append([1])
+
+    if min(np.array(e_cut_plot).shape) == 0:
+        raise ValueError('Check values for the energy cut plot!\n'
+                         'Probably,the request does not fit the '
+                         'delay-energy data.')
 
 '''
 
@@ -1254,7 +1265,7 @@ if delay_cut == 'on':
                          label=label,
                          markersize=marker_size_d, linewidth=line_width_d,
                          alpha=line_op_d/100)
-                if int_area_d == 'on':
+                if int_area_d == 'on' and delay_energy_map == 'on':
                     try:
                         ax1.axhline(y=t[i]+dt[i]/2, color=color_dict[i],
                                     linewidth=line_width_int_area_d,
@@ -1266,8 +1277,9 @@ if delay_cut == 'on':
                                     linestyle=line_type_int_area_d)
                     except TypeError:
                         pass
-        ax2.set_xlabel('Kinetic energy (eV)', labelpad=10, fontsize=font_size_axis)
-    
+        ax2.set_xlabel('Kinetic energy (eV)', labelpad=10,
+                       fontsize=font_size_axis)
+
         if t_cut_norm == 'on' or map_norm == 'on' or map_norm_dif == 'on' or t_cut_norm_dif == 'on' or t_cut_norm_bin == 'on':
             ax2.set_ylabel('Intensity (arb. units)', labelpad=10,
                            fontsize=font_size_axis)

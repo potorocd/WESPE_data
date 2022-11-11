@@ -1,6 +1,8 @@
 # WESPE data (consecutive linear script)
 ## Introduction
 This is the ancestor of the WESPE data viewer program with GUI. It possesses most features of the newer software, including extra features like a run corrector. However, the main disadvantage is that this is a consecutive linear script that generates one image per run, making all calculations (like the generation of the delay-energy map via numerous iterations) every time. As a result, an object-oriented approach was developed, which yielded the WESPE data viewer. Still, the current script can be efficiently used to explore time-resolved XPS data from the WESPE endstation.
+## Example plot
+![Example plot](https://github.com/potorocd/WESPE_data/blob/main/Example_plot.png)
 ## How to use	
 Anaconda distribution in combination with Spyder environment is recommended.
 
